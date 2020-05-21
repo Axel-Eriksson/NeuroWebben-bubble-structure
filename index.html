@@ -18,20 +18,22 @@
 </style>
 <body>
 <script src="//d3js.org/d3.v3.min.js"></script>
+
+<div id="myDIV">This is my DIV element.</div>
+
 <script>
 
-var width = 960,
-    height = 500,
-    root;
 
-// link strength.
-function linkStrength(l) {
-  return d.color//d._children ? "#e91d17" : d.children ? "#c6dbef" : "#fd8d3c";
-}
+
+
+var width = 960,
+    height = 700,
+    root;
 
 var force = d3.layout.force()
     .size([width, height])
-    .linkDistance(40)
+    .linkDistance(function(d) { return d.target.size*2 + d.source.size; })
+    .gravity(0.1)
     .on("tick", tick);
 
 var svg = d3.select("body").append("svg")
@@ -87,6 +89,10 @@ function update() {
       .style("fill", color)
       .on("click", click)
       .call(force.drag);
+node
+  .append('text')
+  .attr('dy', 4)
+  .text("dsd")
 }
 
 function tick() {
@@ -99,22 +105,21 @@ function tick() {
       .attr("cy", function(d) { return d.y; });
 }
 
-// Color leaf nodes orange, and packages white or blue.
+// Color nodes 
 function color(d) {
-  return d.color;//d._children ? "#e91d17" : d.children ? "#c6dbef" : "#fd8d3c";
+  return d.color;
 }
 
 // Toggle children on click.
 function click(d) {
   if (!d3.event.defaultPrevented) {
-    if (d.children) {
-      d._children = d.children;
-      d.children = null;
+    var x = document.getElementById("myDIV");
+    if (x.style.display === "none") {
+      x.style.display = "block";
     } else {
-      d.children = d._children;
-      d._children = null;
+      x.style.display = "none";
     }
-    update();
+    //if (d.link) window.location.replace(d.link);
   }
 }
 

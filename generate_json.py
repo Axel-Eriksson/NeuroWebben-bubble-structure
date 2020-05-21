@@ -9,13 +9,13 @@ COLOR = "color"
 LINK = "link"
 CHILDREN = "children"
 SIZE = "size"
-HEADING_SIZE = 14
-SUB_HEADING_SIZE = 10
-SUB_SUB_HEADING_SIZE = 7
+HEADING_SIZE = 17
+SUB_HEADING_SIZE = 13
+SUB_SUB_HEADING_SIZE = 10
 ALL_SUB_HEADINGS = {
     "Hjärnsmart lärande": "#e91d17",
     "Berikande miljöer": "#ea5b19",
-    "Människa & teknik": "#ea5b19",
+    "Människa & teknik": "#eda818",
     "Social interaktion": "#e9ed1a",
     "Personlig utveckling": "#95d514", 
     "Kropp & livsstil": "#10d281",
@@ -29,7 +29,11 @@ def auto_generate_children(name, color):
     children_list = []
     childs = int(random.uniform(2,5))
     for it in range(childs):
-        children_list.append({NAME: name + str(it), SIZE: int(random.uniform(2,4)), COLOR: color})
+        sub_children_list = []
+        sub_childs = int(random.uniform(5,10))
+        for sub_it in range(sub_childs):
+            sub_children_list.append({NAME: name + "_" + str(it) + "_" + str(sub_it), SIZE: int(random.uniform(2,4)), COLOR: color})
+        children_list.append({NAME: name + "_" + str(it), SIZE: int(random.uniform(4,6)), COLOR: color, CHILDREN: sub_children_list})
     return children_list
 
 def fill_tree_json(): 
@@ -95,4 +99,4 @@ tree_json = fill_tree_json()
 
 with open("data_file.json", "w") as write_file:
     json.dump(tree_json, write_file)
-print(tree_json)
+# print(tree_json)
