@@ -27,8 +27,10 @@ var width = 960,
 
 var force = d3.layout.force()
     .size([width, height])
-    .linkDistance(function(d) { return d.target.size*2 + d.source.size; })
-    .gravity(0.1)
+    .linkDistance(function(d) { return d.target.size*4 + d.source.size*2; })
+    .gravity(0.02)
+    .charge(-20
+    )
     .on("tick", tick);
 
 var svg = d3.select("body").append("svg")
@@ -37,6 +39,7 @@ var svg = d3.select("body").append("svg")
 
 var link = svg.selectAll(".link"),
     node = svg.selectAll(".node");
+    nodeText = svg.selectAll(".node");
 
 d3.json("data_file.json", function(error, json) {
   if (error) throw error;
@@ -76,17 +79,7 @@ function update() {
   node.exit().remove();
 
   // Enter any new nodes.
-  var nodeEnter = node.enter()
-  nodeEnter
-     .append("text")
-     .attr("class", "node")
-     .attr("dx", function(d) { return d.x+d.size; })
-     .attr("dy", function(d) { return d.y-d.size; })
-     .text(function(d){return (
-       d.name.charAt(d.name.length-2) != "_") ? d.name : "" })
-     .call(force.drag)
-     .on("click", click)
-  nodeEnter
+  node.enter()
       .append("circle")
       .attr("class", "node")
       .attr("cx", function(d) { return d.x; })
@@ -94,9 +87,23 @@ function update() {
       .attr("r", function(d) { return d.size; })
       .style("fill", color)
       .call(force.drag)
-  
-  
-  
+
+  // Update the node texts…
+  nodeText = nodeText.data(nodes, function(d) { return d.id; })
+
+  // Exit any old node texts.
+  nodeText.exit().remove();
+
+  // Enter any new node texts.
+  nodeText.enter()
+     .append("text")
+     .attr("class", "node")
+     .attr("dx", function(d) { return d.x+d.size; })
+     .attr("dy", function(d) { return d.y-d.size; })
+     .text(function(d){return (
+       d.name.charAt(d.name.length-2) != "_") ? d.name : "" })
+     .call(force.drag)
+     .on("click", click)  
 
 }
 
@@ -106,10 +113,11 @@ function tick() {
       .attr("x2", function(d) { return d.target.x; })
       .attr("y2", function(d) { return d.target.y; });
 
-  node.attr("dx", function(d) { return d.x+d.size; })
-      .attr("dy", function(d) { return d.y-d.size; })
-      .attr("cx", function(d) { return d.x; })
+  node.attr("cx", function(d) { return d.x; })
       .attr("cy", function(d) { return d.y; });
+  
+  nodeText.attr("dx", function(d) { return d.x+d.size; })
+      .attr("dy", function(d) { return d.y-d.size; })
 }
 
 // Color nodes 
