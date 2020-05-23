@@ -46,7 +46,7 @@ def fill_tree_json():
 
     if resp.status_code==200: 
         tree_json = {
-            NAME: "neurowebben",
+            NAME: "NeuroWebben",
             COLOR: "#2f528f",
             SIZE: HEADING_SIZE,
             CHILDREN: []}
