@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Force-Directed Graph</title>
@@ -25,6 +26,8 @@
 </style>
 <body>
 <script src="//d3js.org/d3.v3.min.js"></script>
+<script src="http://underscorejs.org/underscore-min.js"></script>
+
 
 
 <script>
@@ -38,7 +41,7 @@ var force = d3.layout.force()
     .linkDistance(function(d) { return d.target.size*0.1 + d.source.size*1 + 
       (d.target.name.charAt(d.target.name.length-2) != "_") ? d.source.size*5 : 0; })
     .gravity(0.002)
-    .charge(-10)
+    .charge(-12)
     .on("tick", tick);
 
 var svg = d3.select("body").append("svg")
@@ -57,9 +60,22 @@ d3.json("data_file.json", function(error, json) {
 });
 
 function update() {
-  var nodes = flatten(root),
-      links = d3.layout.tree().links(nodes);
-  
+  var nodes = flatten(root);
+  //Create links for page interactions
+  //var newLinksNames = [{"source": "Kost", "target": "Tankar"}, {"source": "Kost", "target": "Känslor"}]
+  //var newLinkPairs = getNodeReferencesForLinks(nodes, newLinksNames);
+  var links_from_nodes = d3.layout.tree().links(nodes);
+  //links_internal = [].concat(newLinkPairs)
+  links = links_from_nodes//.concat(links_internal)
+  //document.write(Object.keys(links[0]));
+  // _.each(links,  function(d) { document.write(Object.keys(d.target));
+  //                                      document.write(d.target.name);
+  //                                      document.write("<br>");
+  //                                      document.write(Object.keys(d.target));
+  //                                      document.write(d.source.id);
+  //                                      document.write("<br>");
+  //                                      document.write("<br>");})
+
   // Restart the force layout.
   force
       .nodes(nodes)
@@ -73,7 +89,7 @@ function update() {
   link.exit().remove();
 
   // Enter any new links.
-  link.enter().insert("line", ".node")
+  link.enter().insert("line", ".node") 
       .attr("class", "link")
       .attr("x1", function(d) { return d.source.x; })
       .attr("y1", function(d) { return d.source.y; })
@@ -134,11 +150,21 @@ function color(d) {
   return d.color;
 }
 
-// Follow link on click.
+// Follow hyper-link on click.
 function click(d) {
   if (!d3.event.defaultPrevented) {
     if (d.link) window.location.replace(d.link);
   }
+}
+
+function getNodeReferencesForLinks(nodes, newLinksNames){
+    var newLinkPairs =[];
+    _.each(newLinksNames, function(p){
+        var s = _.findWhere(nodes, {name: p.source});
+        var t = _.findWhere(nodes, {name: p.target});
+        newLinkPairs.push({source:s,target:t});
+     });
+    return newLinkPairs;
 }
 
 // Returns a list of all nodes under the root.
